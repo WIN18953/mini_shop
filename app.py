@@ -19,7 +19,8 @@ def load_user(user_id):
 
 @app.route("/")
 def home():
-    return "<h1>Mini Shop is Running 🚀</h1>"
+    return render_template("home.html")
+
 
 
 if __name__ == "__main__":
