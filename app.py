@@ -27,6 +27,13 @@ def load_user(user_id):
 @app.route("/")
 def home():
     return render_template("home.html")
+# ========================
+# PRODUCTS
+# ========================
+@app.route("/products")
+def products():
+    all_products = Product.query.all()
+    return render_template("products.html", products=all_products)
 
 
 # ========================
@@ -73,7 +80,11 @@ def login():
 
     return render_template("login.html")
 
-
+@app.route("/logout")
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for("home"))
 
 
 if __name__ == "__main__":
