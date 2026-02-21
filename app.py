@@ -168,6 +168,29 @@ def remove_from_cart(product_id):
 
     return redirect(url_for("cart"))
 
+@app.route("/delete_product/<int:id>", methods=["POST"])
+@login_required
+def delete_product(id):
+    product = Product.query.get_or_404(id)
+    db.session.delete(product)
+    db.session.commit()
+    return redirect(url_for("products"))
+
+@app.route("/edit_product/<int:id>", methods=["GET", "POST"])
+@login_required
+def edit_product(id):
+    product = Product.query.get_or_404(id)
+
+    if request.method == "POST":
+        product.name = request.form["name"]
+        product.description = request.form["description"]
+        product.price = request.form["price"]
+        product.image = request.form["image"]
+        db.session.commit()
+        return redirect(url_for("products"))
+
+    return render_template("edit_product.html", product=product)
+
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()

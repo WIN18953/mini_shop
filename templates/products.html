@@ -29,6 +29,18 @@
    class="btn btn-primary mt-2">
    ดูรายละเอียด
 </a>
+{% if True %}
+  <div class="mt-2">
+      <a href="/edit_product/{{ product.id }}" class="btn btn-warning btn-sm">Edit</a>
+
+      <form action="/delete_product/{{ product.id }}" method="POST" style="display:inline;">
+          <button type="submit" class="btn btn-danger btn-sm"
+                  onclick="return confirm('ยืนยันการลบสินค้า?')">
+              Delete
+          </button>
+      </form>
+  </div>
+{% endif %}
         </div>
       </div>
     </div>
