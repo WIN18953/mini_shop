@@ -179,6 +179,10 @@ def delete_product(id):
 @app.route("/edit_product/<int:id>", methods=["GET", "POST"])
 @login_required
 def edit_product(id):
+
+    if not current_user.is_admin:
+        return "Unauthorized", 403
+
     product = Product.query.get_or_404(id)
 
     if request.method == "POST":

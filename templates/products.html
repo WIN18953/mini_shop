@@ -29,7 +29,7 @@
    class="btn btn-primary mt-2">
    ดูรายละเอียด
 </a>
-{% if True %}
+{% if current_user.is_authenticated and current_user.is_admin %}
   <div class="mt-2">
       <a href="/edit_product/{{ product.id }}" class="btn btn-warning btn-sm">Edit</a>
 
