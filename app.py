@@ -158,6 +158,16 @@ def cart():
 
     return render_template("cart.html", items=cart_items, total=total)
 
+@app.route("/remove_from_cart/<int:product_id>")
+def remove_from_cart(product_id):
+
+    if "cart" in session:
+        if product_id in session["cart"]:
+            session["cart"].remove(product_id)  # ลบ 1 ตัว
+            session.modified = True
+
+    return redirect(url_for("cart"))
+
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()
