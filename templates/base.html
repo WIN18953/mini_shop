@@ -12,7 +12,13 @@
 
     <div>
       <a href="/" class="btn btn-outline-light">Home</a>
-      <a href="/products" class="btn btn-outline-light">Products</a>
+      <a href="{{ url_for('products') }}" class="btn btn-outline-light">Products</a>
+      <a href="{{ url_for('cart') }}" class="btn btn-outline-light">
+  Cart 
+  <span class="badge bg-danger">
+    {{ session.get('cart', [])|length }}
+  </span>
+</a>
 
       {% if current_user.is_authenticated %}
           <a href="/admin" class="btn btn-warning">Admin</a>
