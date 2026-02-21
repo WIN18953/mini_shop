@@ -2,8 +2,10 @@ from flask import Flask, render_template, request, redirect, url_for
 from models import db, User, Product, Cart
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
+from flask import Flask, render_template, redirect, url_for, session
 
 app = Flask(__name__)
+app.secret_key = "mysecretkey"
 app.config['SECRET_KEY'] = 'secret123'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 
@@ -124,6 +126,37 @@ def logout():
 def product_detail(product_id):
     product = Product.query.get_or_404(product_id)
     return render_template("product_detail.html", product=product)
+
+@app.route("/add_to_cart/<int:product_id>")
+def add_to_cart(product_id):
+
+    # ถ้ายังไม่มี cart ใน session ให้สร้างใหม่
+    if "cart" not in session:
+        session["cart"] = []
+
+    # เพิ่ม product_id ลงไป
+    session["cart"].append(product_id)
+
+    # บอก Flask ว่ามีการแก้ไข session
+    session.modified = True
+
+    # กลับไปหน้าตะกร้า
+    return redirect(url_for("cart"))
+
+@app.route("/cart")
+def cart():
+    cart_items = []
+    total = 0
+
+    if "cart" in session:
+        for product_id in session["cart"]:
+            product = Product.query.get(product_id)
+
+            if product:
+                cart_items.append(product)
+                total += product.price
+
+    return render_template("cart.html", items=cart_items, total=total)
 
 if __name__ == "__main__":
     with app.app_context():

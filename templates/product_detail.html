@@ -12,9 +12,11 @@
     <p>{{ product.description }}</p>
     <h4 class="text-success">฿{{ product.price }}</h4>
 
-    <button class="btn btn-success">
-      Add to Cart
-    </button>
+    <a href="{{ url_for('add_to_cart', product_id=product.id) }}"
+    class="btn btn-success">
+    Add to Cart
+    
+    </a>
   </div>
 </div>
 
