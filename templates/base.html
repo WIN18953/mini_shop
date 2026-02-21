@@ -9,18 +9,20 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
   <div class="container">
     <a class="navbar-brand" href="/">Mini Shop</a>
-<div>
-  <a href="/" class="btn btn-outline-light">Home</a>
-  <a href="/products" class="btn btn-outline-light">Products</a>
 
-  {% if current_user.is_authenticated %}
-      <span class="text-white me-2">Hello, {{ current_user.username }}</span>
-      <a href="/logout" class="btn btn-danger">Logout</a>
-  {% else %}
-      <a href="/login" class="btn btn-outline-light">Login</a>
-      <a href="/register" class="btn btn-outline-light">Register</a>
-  {% endif %}
-</div>
+    <div>
+      <a href="/" class="btn btn-outline-light">Home</a>
+      <a href="/products" class="btn btn-outline-light">Products</a>
+
+      {% if current_user.is_authenticated %}
+          <a href="/admin" class="btn btn-warning">Admin</a>
+          <span class="text-white me-2">Hello, {{ current_user.username }}</span>
+          <a href="/logout" class="btn btn-danger">Logout</a>
+      {% else %}
+          <a href="/login" class="btn btn-outline-light">Login</a>
+          <a href="/register" class="btn btn-outline-light">Register</a>
+      {% endif %}
+    </div>
 
   </div>
 </nav>
@@ -31,3 +33,4 @@
 
 </body>
 </html>
+<a href="/add_product" class="btn btn-success">Add Product</a>

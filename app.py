@@ -1,10 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for
 from models import db, User, Product, Cart
-from flask_login import LoginManager
-from werkzeug.security import generate_password_hash
-from flask_login import login_user, login_required, logout_user, current_user
-from werkzeug.security import check_password_hash
-
+from flask_login import LoginManager, login_user, login_required, logout_user, current_user
+from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret123'
@@ -15,6 +12,7 @@ db.init_app(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = "login"
+
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -27,6 +25,8 @@ def load_user(user_id):
 @app.route("/")
 def home():
     return render_template("home.html")
+
+
 # ========================
 # PRODUCTS
 # ========================
@@ -34,6 +34,37 @@ def home():
 def products():
     all_products = Product.query.all()
     return render_template("products.html", products=all_products)
+
+
+# ========================
+# ADMIN - ADD PRODUCT
+# ========================
+@app.route("/admin", methods=["GET", "POST"])
+@login_required
+def admin():
+    if request.method == "POST":
+        name = request.form.get("name")
+        price = request.form.get("price")
+        description = request.form.get("description")
+        image = request.form.get("image")
+
+        # กัน error ถ้าฟอร์มส่งไม่ครบ
+        if not name or not price or not description:
+            return "Please fill all required fields"
+
+        new_product = Product(
+            name=name,
+            price=float(price),
+            description=description,
+            image=image
+        )
+
+        db.session.add(new_product)
+        db.session.commit()
+
+        return redirect(url_for("products"))
+
+    return render_template("admin.html")
 
 
 # ========================
@@ -46,7 +77,6 @@ def register():
         email = request.form["email"]
         password = generate_password_hash(request.form["password"])
 
-        # สร้าง user ใหม่
         new_user = User(
             username=username,
             email=email,
@@ -62,7 +92,7 @@ def register():
 
 
 # ========================
-# LOGIN (ชั่วคราวก่อน)
+# LOGIN
 # ========================
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -80,6 +110,10 @@ def login():
 
     return render_template("login.html")
 
+
+# ========================
+# LOGOUT
+# ========================
 @app.route("/logout")
 @login_required
 def logout():
