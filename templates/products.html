@@ -25,6 +25,10 @@
             {{ product.description[:50] }}{% if product.description|length > 50 %}...{% endif %}
           </p>
           <h6>฿{{ product.price }}</h6>
+          <a href="{{ url_for('product_detail', product_id=product.id) }}"
+   class="btn btn-primary mt-2">
+   ดูรายละเอียด
+</a>
         </div>
       </div>
     </div>
