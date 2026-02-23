@@ -3,6 +3,7 @@ from models import db, User, Product, Cart
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask import Flask, render_template, redirect, url_for, session
+from models import Order
 
 app = Flask(__name__)
 app.secret_key = "mysecretkey"
@@ -194,6 +195,39 @@ def edit_product(id):
         return redirect(url_for("products"))
 
     return render_template("edit_product.html", product=product)
+
+@app.route("/checkout", methods=["POST"])
+@login_required
+def checkout():
+    cart = session.get("cart", [])
+
+    if not cart:
+        return redirect(url_for("cart"))
+
+    total = 0
+    for item in cart:
+        product = Product.query.get(item["id"])
+        total += product.price * item["quantity"]
+
+    new_order = Order(
+        user_id=current_user.id,
+        total_price=total
+    )
+
+    db.session.add(new_order)
+    db.session.commit()
+
+    # ล้างตะกร้า
+    session["cart"] = []
+
+    flash("สั่งซื้อสำเร็จ!", "success")
+    return redirect(url_for("order_history"))
+
+@app.route("/orders")
+@login_required
+def order_history():
+    orders = Order.query.filter_by(user_id=current_user.id).all()
+    return render_template("orders.html", orders=orders)
 
 if __name__ == "__main__":
     with app.app_context():
