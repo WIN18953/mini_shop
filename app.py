@@ -1,5 +1,5 @@
-from flask import Flask, render_template, request, redirect, url_for, session
-from models import db, User, Product, Order
+from flask import Flask, render_template, request, redirect, url_for, session, flash
+from models import db, User, Product, Cart, Order
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -37,42 +37,10 @@ def products():
 
 
 # ========================
-# ADMIN
-# ========================
-@app.route("/admin", methods=["GET", "POST"])
-@login_required
-def admin():
-
-    if not current_user.is_admin:
-        return "Unauthorized", 403
-
-    if request.method == "POST":
-        name = request.form.get("name")
-        price = request.form.get("price")
-        description = request.form.get("description")
-        image = request.form.get("image")
-
-        new_product = Product(
-            name=name,
-            price=float(price),
-            description=description,
-            image=image
-        )
-
-        db.session.add(new_product)
-        db.session.commit()
-
-        return redirect(url_for("products"))
-
-    return render_template("admin.html")
-
-
-# ========================
 # REGISTER
 # ========================
 @app.route("/register", methods=["GET", "POST"])
 def register():
-
     if request.method == "POST":
         username = request.form["username"]
         email = request.form["email"]
@@ -97,7 +65,6 @@ def register():
 # ========================
 @app.route("/login", methods=["GET", "POST"])
 def login():
-
     if request.method == "POST":
         email = request.form["email"]
         password = request.form["password"]
@@ -124,105 +91,55 @@ def logout():
 
 
 # ========================
-# PRODUCT DETAIL
-# ========================
-@app.route("/product/<int:product_id>")
-def product_detail(product_id):
-    product = Product.query.get_or_404(product_id)
-    return render_template("product_detail.html", product=product)
-
-
-# ========================
-# ADD TO CART (มือโปร)
+# ADD TO CART (แบบเดิม)
 # ========================
 @app.route("/add_to_cart/<int:product_id>")
-@login_required
 def add_to_cart(product_id):
 
     if "cart" not in session:
         session["cart"] = []
 
-    cart = session["cart"]
-
-    for item in cart:
-        if item["id"] == product_id:
-            item["quantity"] += 1
-            session.modified = True
-            return redirect(url_for("cart"))
-
-    cart.append({
-        "id": product_id,
-        "quantity": 1
-    })
-
+    session["cart"].append(product_id)
     session.modified = True
+
     return redirect(url_for("cart"))
 
 
 # ========================
-# CART
+# CART (แบบเดิม)
 # ========================
 @app.route("/cart")
-@login_required
 def cart():
-
     cart_items = []
     total = 0
 
-    for item in session.get("cart", []):
-        product = Product.query.get(item["id"])
+    if "cart" in session:
+        for product_id in session["cart"]:
+            product = Product.query.get(product_id)
 
-        if product:
-            subtotal = product.price * item["quantity"]
-            total += subtotal
-
-            cart_items.append({
-                "product": product,
-                "quantity": item["quantity"],
-                "subtotal": subtotal
-            })
+            if product:
+                cart_items.append(product)
+                total += product.price
 
     return render_template("cart.html", items=cart_items, total=total)
 
 
 # ========================
-# REMOVE FROM CART
-# ========================
-@app.route("/remove_from_cart/<int:product_id>")
-@login_required
-def remove_from_cart(product_id):
-
-    cart = session.get("cart", [])
-
-    for item in cart:
-        if item["id"] == product_id:
-            item["quantity"] -= 1
-            if item["quantity"] <= 0:
-                cart.remove(item)
-            break
-
-    session.modified = True
-    return redirect(url_for("cart"))
-
-
-# ========================
-# CHECKOUT
+# CHECKOUT (แบบเดิม)
 # ========================
 @app.route("/checkout", methods=["POST"])
 @login_required
 def checkout():
-
     cart = session.get("cart", [])
 
     if not cart:
         return redirect(url_for("cart"))
 
     total = 0
-
-    for item in cart:
-        product = Product.query.get(item["id"])
+    for product_id in cart:
+        product = Product.query.get(product_id)
         if product:
-            total += product.price * item["quantity"]
+            total += product.price
 
     new_order = Order(
         user_id=current_user.id,
@@ -234,6 +151,7 @@ def checkout():
 
     session["cart"] = []
 
+    flash("สั่งซื้อสำเร็จ!", "success")
     return redirect(url_for("order_history"))
 
 
