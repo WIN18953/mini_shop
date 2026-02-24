@@ -164,6 +164,20 @@ def order_history():
     orders = Order.query.filter_by(user_id=current_user.id).all()
     return render_template("orders.html", orders=orders)
 
+@app.route("/admin")
+@login_required
+def admin():
+    if not current_user.is_admin:
+        return "Access Denied"
+
+    products = Product.query.all()
+    users = User.query.all()
+    orders = Order.query.all()
+
+    return render_template("admin.html",
+                           products=products,
+                           users=users,
+                           orders=orders)
 
 if __name__ == "__main__":
     with app.app_context():
