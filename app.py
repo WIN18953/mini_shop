@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, render_template
 from models import db
 from flask_login import LoginManager
 
@@ -13,7 +13,7 @@ login_manager.init_app(app)
 
 @app.route("/")
 def home():
-    return "Mini Shop is Running 🚀"
+    return render_template("home.html")
 
 if __name__ == "__main__":
     with app.app_context():
