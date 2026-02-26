@@ -75,6 +75,33 @@ def products():
     all_products = Product.query.all()
     return render_template("products.html", products=all_products)
 
+from flask import request, redirect, url_for, render_template, flash
+from flask_login import login_required
+
+@app.route('/add_product', methods=['GET', 'POST'])
+@login_required
+def add_product():
+    if request.method == 'POST':
+        name = request.form['name']
+        price = request.form['price']
+        description = request.form['description']
+        image = request.form['image']
+
+        new_product = Product(
+            name=name,
+            price=price,
+            description=description,
+            image=image
+        )
+
+        db.session.add(new_product)
+        db.session.commit()
+
+        flash("Product added successfully!")
+        return redirect(url_for('products'))
+
+    return render_template('add_product.html')
+
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()
