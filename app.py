@@ -30,6 +30,12 @@ def register():
         email = request.form["email"]
         password = generate_password_hash(request.form["password"])
 
+        # ✅ เช็คว่ามี email ซ้ำไหม
+        existing_user = User.query.filter_by(email=email).first()
+        if existing_user:
+            flash("อีเมลนี้ถูกใช้แล้ว ❌")
+            return redirect(url_for("register"))
+
         new_user = User(username=username, email=email, password=password)
         db.session.add(new_user)
         db.session.commit()
