@@ -1,20 +1,21 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Login</title>
-</head>
-<body>
+{% extends "base.html" %}
 
-<h2>Login</h2>
+{% block content %}
+<div class="col-md-6 mx-auto">
+    <h2 class="mb-4">Login</h2>
 
-<form method="POST">
-    <input type="email" name="email" placeholder="Email" required><br><br>
-    <input type="password" name="password" placeholder="Password" required><br><br>
-    <button type="submit">Login</button>
-</form>
+    <form method="POST">
+        <div class="mb-3">
+            <label class="form-label">Email</label>
+            <input type="email" name="email" class="form-control" required>
+        </div>
 
-<br>
-<a href="/register">Go to Register</a>
+        <div class="mb-3">
+            <label class="form-label">Password</label>
+            <input type="password" name="password" class="form-control" required>
+        </div>
 
-</body>
-</html>
+        <button type="submit" class="btn btn-success">Login</button>
+    </form>
+</div>
+{% endblock %}
