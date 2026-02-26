@@ -102,6 +102,17 @@ def add_product():
 
     return render_template('add_product.html')
 
+@app.route('/delete_product/<int:id>', methods=['POST'])
+@login_required
+def delete_product(id):
+    product = Product.query.get_or_404(id)
+    
+    db.session.delete(product)
+    db.session.commit()
+
+    flash("Product deleted successfully 🗑")
+    return redirect(url_for('products'))
+
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()
