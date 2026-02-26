@@ -1,18 +1,26 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Products</title>
-</head>
-<body>
+{% extends "base.html" %}
 
-<h2>All Products</h2>
+{% block content %}
+<h2 class="mb-4">Products</h2>
 
-{% for product in products %}
-    <h3>{{ product.name }}</h3>
-    <p>Price: {{ product.price }}</p>
-    <p>{{ product.description }}</p>
-    <hr>
-{% endfor %}
+<div class="row">
+    {% for product in products %}
+    <div class="col-md-4 mb-4">
+        <div class="card">
+            <img src="{{ product.image or 'https://via.placeholder.com/300' }}" 
+                 class="card-img-top">
+            <div class="card-body">
+                <h5 class="card-title">{{ product.name }}</h5>
+                <p class="card-text">{{ product.description }}</p>
+                <p class="fw-bold">฿ {{ product.price }}</p>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
 
-</body>
-</html>
+{% if not products %}
+<p>ยังไม่มีสินค้าในระบบ</p>
+{% endif %}
+
+{% endblock %}
