@@ -10,10 +10,15 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container">
         <a class="navbar-brand" href="/">Mini Shop 🛒</a>
-        <div>
-            <a class="btn btn-outline-light me-2" href="/login">Login</a>
-            <a class="btn btn-warning" href="/register">Register</a>
-        </div>
+<div>
+    {% if current_user.is_authenticated %}
+        <span class="text-white me-3">Hello, {{ current_user.username }}</span>
+        <a class="btn btn-danger" href="/logout">Logout</a>
+    {% else %}
+        <a class="btn btn-outline-light me-2" href="/login">Login</a>
+        <a class="btn btn-warning" href="/register">Register</a>
+    {% endif %}
+</div>
     </div>
 </nav>
 
