@@ -6,6 +6,7 @@ from flask import Flask, render_template
 from models import db
 from flask_login import LoginManager
 from models import db, User
+from models import db, User, Product
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'supersecretkey'
@@ -68,6 +69,11 @@ def logout():
     logout_user()
     flash("ออกจากระบบแล้ว 👋")
     return redirect(url_for("home"))
+
+@app.route("/products")
+def products():
+    all_products = Product.query.all()
+    return render_template("products.html", products=all_products)
 
 if __name__ == "__main__":
     with app.app_context():
