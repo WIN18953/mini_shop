@@ -1,3 +1,4 @@
+from flask import session
 from werkzeug.security import check_password_hash
 from flask_login import login_user, logout_user, login_required, current_user
 from flask import request, redirect, url_for, flash
@@ -9,6 +10,7 @@ from models import db, User
 from models import db, User, Product
 
 app = Flask(__name__)
+app.secret_key = 'supersecretkey'
 app.config['SECRET_KEY'] = 'supersecretkey'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 
@@ -112,6 +114,22 @@ def delete_product(id):
 
     flash("Product deleted successfully 🗑")
     return redirect(url_for('products'))
+
+@app.route('/add_to_cart/<int:id>')
+def add_to_cart(id):
+    if 'cart' not in session:
+        session['cart'] = []
+
+    session['cart'].append(id)
+    session.modified = True
+
+    flash("Added to cart!")
+    return redirect('/')
+
+@app.route('/cart')
+def cart():
+    cart = session.get('cart', [])
+    return render_template('cart.html', cart=cart)
 
 if __name__ == "__main__":
     with app.app_context():
