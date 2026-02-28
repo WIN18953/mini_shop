@@ -3,14 +3,24 @@
 {% block content %}
 <h2>Your Cart 🛒</h2>
 
-{% if cart %}
-    <ul class="list-group">
-        {% for item in cart %}
-            <li class="list-group-item">
-                Product ID: {{ item }}
+{% if products %}
+    <ul class="list-group mb-3">
+        {% for item in products %}
+            <li class="list-group-item d-flex justify-content-between">
+                <div>
+                    <strong>{{ item.product.name }}</strong>
+                    <br>
+                    Quantity: {{ item.quantity }}
+                </div>
+                <div>
+                    ฿ {{ item.subtotal }}
+                </div>
             </li>
         {% endfor %}
     </ul>
+
+    <h4>Total: ฿ {{ total }}</h4>
+
 {% else %}
     <p>Your cart is empty.</p>
 {% endif %}

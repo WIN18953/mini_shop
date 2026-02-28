@@ -118,18 +118,42 @@ def delete_product(id):
 @app.route('/add_to_cart/<int:id>')
 def add_to_cart(id):
     if 'cart' not in session:
-        session['cart'] = []
+        session['cart'] = {}
 
-    session['cart'].append(id)
+    cart = session['cart']
+
+    id = str(id)  # session key ต้องเป็น string
+
+    if id in cart:
+        cart[id] += 1
+    else:
+        cart[id] = 1
+
+    session['cart'] = cart
     session.modified = True
 
     flash("Added to cart!")
-    return redirect('/')
+    return redirect('/products')
 
 @app.route('/cart')
 def cart():
-    cart = session.get('cart', [])
-    return render_template('cart.html', cart=cart)
+    cart = session.get('cart', {})
+
+    products = []
+    total = 0
+
+    for id, quantity in cart.items():
+        product = Product.query.get(int(id))
+        if product:
+            subtotal = product.price * quantity
+            total += subtotal
+            products.append({
+                'product': product,
+                'quantity': quantity,
+                'subtotal': subtotal
+            })
+
+    return render_template('cart.html', products=products, total=total)
 
 if __name__ == "__main__":
     with app.app_context():
