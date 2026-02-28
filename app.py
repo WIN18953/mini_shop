@@ -8,6 +8,7 @@ from models import db
 from flask_login import LoginManager
 from models import db, User
 from models import db, User, Product
+from models import db, User, Product, Cart, Order, OrderItem
 
 app = Flask(__name__)
 app.secret_key = 'supersecretkey'
@@ -26,6 +27,7 @@ def load_user(user_id):
 @app.route("/")
 def home():
     return render_template("home.html")
+
 @app.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "POST":
@@ -215,6 +217,51 @@ def remove(id):
     session.modified = True
 
     return redirect('/cart')
+
+from flask_login import login_required, current_user
+
+@app.route('/checkout')
+@login_required
+def checkout():
+
+    # ดึง cart ของ user ปัจจุบัน
+    cart_items = Cart.query.filter_by(user_id=current_user.id).all()
+
+    if not cart_items:
+        return redirect('/cart')
+
+    total = 0
+
+    # สร้าง Order ใหม่
+    new_order = Order(user_id=current_user.id, total_price=0)
+    db.session.add(new_order)
+    db.session.commit()   # commit ก่อนเพื่อให้ได้ order.id
+
+    # วนสร้าง OrderItem
+    for item in cart_items:
+        product = Product.query.get(item.product_id)
+        if product:
+            subtotal = product.price * item.quantity
+            total += subtotal
+
+            order_item = OrderItem(
+                order_id=new_order.id,
+                product_id=product.id,
+                quantity=item.quantity,
+                price=product.price
+            )
+            db.session.add(order_item)
+
+    # อัปเดต total_price
+    new_order.total_price = total
+
+    # ลบ cart ของ user
+    for item in cart_items:
+        db.session.delete(item)
+
+    db.session.commit()
+
+    return render_template('success.html', total=total)
 
 if __name__ == "__main__":
     with app.app_context():
