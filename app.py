@@ -117,12 +117,12 @@ def delete_product(id):
 
 @app.route('/add_to_cart/<int:id>')
 def add_to_cart(id):
-    if 'cart' not in session:
+
+    if 'cart' not in session or not isinstance(session['cart'], dict):
         session['cart'] = {}
 
     cart = session['cart']
-
-    id = str(id)  # session key ต้องเป็น string
+    id = str(id)
 
     if id in cart:
         cart[id] += 1
@@ -132,11 +132,14 @@ def add_to_cart(id):
     session['cart'] = cart
     session.modified = True
 
-    flash("Added to cart!")
     return redirect('/products')
 
 @app.route('/cart')
 def cart():
+
+    if 'cart' not in session or not isinstance(session['cart'], dict):
+        session['cart'] = {}
+
     cart = session.get('cart', {})
 
     products = []
@@ -154,6 +157,64 @@ def cart():
             })
 
     return render_template('cart.html', products=products, total=total)
+
+@app.route('/clear')
+def clear():
+    session.clear()
+    return "Session cleared!"
+
+@app.route('/increase/<int:id>')
+def increase(id):
+
+    if 'cart' not in session or not isinstance(session['cart'], dict):
+        session['cart'] = {}
+
+    cart = session['cart']
+    id = str(id)
+
+    if id in cart:
+        cart[id] += 1
+
+    session['cart'] = cart
+    session.modified = True
+
+    return redirect('/cart')
+
+@app.route('/decrease/<int:id>')
+def decrease(id):
+
+    if 'cart' not in session or not isinstance(session['cart'], dict):
+        session['cart'] = {}
+
+    cart = session['cart']
+    id = str(id)
+
+    if id in cart:
+        cart[id] -= 1
+        if cart[id] <= 0:
+            del cart[id]
+
+    session['cart'] = cart
+    session.modified = True
+
+    return redirect('/cart')
+
+@app.route('/remove/<int:id>')
+def remove(id):
+
+    if 'cart' not in session or not isinstance(session['cart'], dict):
+        session['cart'] = {}
+
+    cart = session['cart']
+    id = str(id)
+
+    if id in cart:
+        del cart[id]
+
+    session['cart'] = cart
+    session.modified = True
+
+    return redirect('/cart')
 
 if __name__ == "__main__":
     with app.app_context():
