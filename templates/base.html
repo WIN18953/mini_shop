@@ -7,28 +7,52 @@
 </head>
 <body>
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+<nav class="navbar navbar-expand-lg navbar-dark bg-black shadow">
     <div class="container">
-        <a class="navbar-brand" href="/">Mini Shop 🛒</a>
-        <a class="nav-link text-white" href="/products">Products</a>
-<div>
-    {% if current_user.is_authenticated and current_user.is_admin %}
-    <a href="{{ url_for('admin_orders') }}" class="btn btn-danger ms-2">
-        Admin
-    </a>
-{% endif %}
-    {% if current_user.is_authenticated %}
-        <a class="btn btn-success me-2" href="{{ url_for('add_product') }}">
-    Add Product
-</a>
-        <span class="text-white me-3">Hello, {{ current_user.username }}</span>
-        <a class="btn btn-success me-2" href="/cart">Cart 🛒</a>
-        <a class="btn btn-danger" href="/logout">Logout</a>
-    {% else %}
-        <a class="btn btn-outline-light me-2" href="/login">Login</a>
-        <a class="btn btn-warning" href="/register">Register</a>
-    {% endif %}
-</div>
+
+        <a class="navbar-brand fw-bold" href="/">Mini Shop 🛒</a>
+
+        <div class="d-flex align-items-center gap-2">
+
+            <a class="nav-link text-light" href="/products">Products</a>
+
+            {% if current_user.is_authenticated %}
+
+                {% if current_user.is_admin %}
+                    <a class="btn btn-outline-danger btn-sm"
+                       href="{{ url_for('admin_orders') }}">
+                        Admin
+                    </a>
+                {% endif %}
+
+                <a class="btn btn-outline-success btn-sm"
+                   href="{{ url_for('add_product') }}">
+                    Add Product
+                </a>
+
+                <a class="btn btn-outline-light btn-sm"
+                   href="/cart">
+                    Cart 🛒
+                </a>
+
+                <span class="text-secondary small">
+                    Hello, {{ current_user.username }}
+                </span>
+
+                <a class="btn btn-danger btn-sm"
+                   href="/logout">
+                    Logout
+                </a>
+
+            {% else %}
+                <a class="btn btn-outline-light btn-sm"
+                   href="/login">Login</a>
+
+                <a class="btn btn-warning btn-sm"
+                   href="/register">Register</a>
+            {% endif %}
+
+        </div>
     </div>
 </nav>
 
