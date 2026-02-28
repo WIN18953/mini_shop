@@ -12,6 +12,11 @@
         <a class="navbar-brand" href="/">Mini Shop 🛒</a>
         <a class="nav-link text-white" href="/products">Products</a>
 <div>
+    {% if current_user.is_authenticated and current_user.is_admin %}
+    <a href="{{ url_for('admin_orders') }}" class="btn btn-danger ms-2">
+        Admin
+    </a>
+{% endif %}
     {% if current_user.is_authenticated %}
         <a class="btn btn-success me-2" href="{{ url_for('add_product') }}">
     Add Product
