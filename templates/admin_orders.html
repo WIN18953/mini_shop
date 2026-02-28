@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Admin - All Orders 📦</h2>
+
+{% if orders %}
+    <ul class="list-group">
+        {% for order in orders %}
+            <li class="list-group-item d-flex justify-content-between">
+                <div>
+                    <strong>Order #{{ order.id }}</strong><br>
+                    User ID: {{ order.user_id }}
+                </div>
+                <div>
+                    ฿ {{ order.total_price }}
+                </div>
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No orders yet.</p>
+{% endif %}
+
+{% endblock %}

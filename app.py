@@ -224,10 +224,9 @@ from flask_login import login_required, current_user
 @login_required
 def checkout():
 
-    # ดึง cart ของ user ปัจจุบัน
-    cart_items = Cart.query.filter_by(user_id=current_user.id).all()
+    cart = session.get('cart', {})
 
-    if not cart_items:
+    if not cart:
         return redirect('/cart')
 
     total = 0
@@ -235,33 +234,36 @@ def checkout():
     # สร้าง Order ใหม่
     new_order = Order(user_id=current_user.id, total_price=0)
     db.session.add(new_order)
-    db.session.commit()   # commit ก่อนเพื่อให้ได้ order.id
+    db.session.commit()  # commit เพื่อเอา order.id
 
-    # วนสร้าง OrderItem
-    for item in cart_items:
-        product = Product.query.get(item.product_id)
+    for product_id, quantity in cart.items():
+        product = Product.query.get(int(product_id))
         if product:
-            subtotal = product.price * item.quantity
+            subtotal = product.price * quantity
             total += subtotal
 
             order_item = OrderItem(
                 order_id=new_order.id,
                 product_id=product.id,
-                quantity=item.quantity,
+                quantity=quantity,
                 price=product.price
             )
             db.session.add(order_item)
 
-    # อัปเดต total_price
     new_order.total_price = total
-
-    # ลบ cart ของ user
-    for item in cart_items:
-        db.session.delete(item)
 
     db.session.commit()
 
+    # ล้าง cart
+    session['cart'] = {}
+
     return render_template('success.html', total=total)
+
+@app.route('/admin/orders')
+@login_required
+def admin_orders():
+    orders = Order.query.all()
+    return render_template('admin_orders.html', orders=orders)
 
 if __name__ == "__main__":
     with app.app_context():
