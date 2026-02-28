@@ -4,20 +4,33 @@
 <h2>Your Cart 🛒</h2>
 
 {% if products %}
-    <ul class="list-group mb-3">
-        {% for item in products %}
-            <li class="list-group-item d-flex justify-content-between">
-                <div>
-                    <strong>{{ item.product.name }}</strong>
-                    <br>
-                    Quantity: {{ item.quantity }}
-                </div>
-                <div>
-                    ฿ {{ item.subtotal }}
-                </div>
-            </li>
-        {% endfor %}
-    </ul>
+<ul class="list-group mb-3">
+    {% for item in products %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+
+            <div>
+                <strong>{{ item.product.name }}</strong>
+                <br>
+                ฿ {{ item.product.price }}
+            </div>
+
+            <div>
+                <a href="/decrease/{{ item.product.id }}" class="btn btn-sm btn-secondary">-</a>
+
+                <span class="mx-2">{{ item.quantity }}</span>
+
+                <a href="/increase/{{ item.product.id }}" class="btn btn-sm btn-secondary">+</a>
+            </div>
+
+            <div>
+                ฿ {{ item.subtotal }}
+                <br>
+                <a href="/remove/{{ item.product.id }}" class="text-danger">Remove</a>
+            </div>
+
+        </li>
+    {% endfor %}
+</ul>
 
     <h4>Total: ฿ {{ total }}</h4>
 
