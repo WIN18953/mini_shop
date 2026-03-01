@@ -35,7 +35,7 @@ def register():
         email = request.form["email"]
         password = generate_password_hash(request.form["password"])
 
-        # ✅ เช็คว่ามี email ซ้ำไหม
+        
         existing_user = User.query.filter_by(email=email).first()
         if existing_user:
             flash("อีเมลนี้ถูกใช้แล้ว ❌")
@@ -231,10 +231,10 @@ def checkout():
 
     total = 0
 
-    # สร้าง Order ใหม่
+  
     new_order = Order(user_id=current_user.id, total_price=0)
     db.session.add(new_order)
-    db.session.commit()  # commit เพื่อเอา order.id
+    db.session.commit()
 
     for product_id, quantity in cart.items():
         product = Product.query.get(int(product_id))
@@ -254,7 +254,6 @@ def checkout():
 
     db.session.commit()
 
-    # ล้าง cart
     session['cart'] = {}
 
     return render_template('success.html', total=total)
@@ -264,6 +263,13 @@ def checkout():
 def admin_orders():
     orders = Order.query.all()
     return render_template('admin_orders.html', orders=orders)
+
+@app.route("/admin")
+def admin():
+    cart_ids = session.get("cart", [])
+    products = Product.query.filter(Product.id.in_(cart_ids)).all()
+    total = sum(p.price for p in products)
+    return render_template("admin.html", products=products, total=total)
 
 if __name__ == "__main__":
     with app.app_context():

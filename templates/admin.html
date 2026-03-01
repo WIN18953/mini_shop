@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2 class="fw-bold mb-4">⚙ Admin Panel</h2>
+
+{% if products %}
+<table class="table table-bordered">
+<tr>
+<th>Name</th>
+<th>Price</th>
+</tr>
+
+{% for product in products %}
+<tr>
+<td>{{ product.name }}</td>
+<td>฿ {{ product.price }}</td>
+</tr>
+{% endfor %}
+
+</table>
+
+<h4 class="text-end fw-bold">Total: ฿ {{ total }}</h4>
+
+{% else %}
+<p>No items in cart.</p>
+{% endif %}
+
+{% endblock %}
